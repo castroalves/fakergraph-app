@@ -53,12 +53,6 @@ export default function Page() {
     return <FormPage />;
 }
 
-type FormData = {
-    // fields: any;
-    // quantity: number;
-    // model: string;
-};
-
 const dataTypes = [
     { label: "Skip", value: "skip" },
     { label: "Color", value: "color" },
@@ -86,8 +80,10 @@ function FormPage() {
     const {
         control,
         register,
+        unregister,
         handleSubmit,
         setValue,
+        resetField,
         formState: { errors },
     } = useForm();
 
@@ -138,8 +134,9 @@ function FormPage() {
             .then((response: any) => {
                 const { data } = response;
                 if (data) {
+                    console.log(data);
                     setLoading(false);
-                    setModelFields([]);
+                    // setModelFields([]);
                     setEntries(data);
                     setButtonLabel("Generate Content");
                 }
@@ -156,10 +153,10 @@ function FormPage() {
     };
 
     const onSubmit = (data: any) => {
-        // setLoading(true);
-        // setButtonLabel("Generating...");
+        setLoading(true);
+        setButtonLabel("Generating...");
         console.log("formData", data);
-        // generate(data);
+        generate(data);
     };
 
     useEffect(() => {
@@ -176,6 +173,10 @@ function FormPage() {
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        setModelFields(modelFields);
+    }, [modelFields]);
 
     return (
         <Flex
@@ -213,8 +214,8 @@ function FormPage() {
                                 setValue("model", e.target.value);
                             }}
                         >
-                            {models?.map((model: any) => (
-                                <option key={model.apiId} value={model.apiId}>
+                            {models?.map((model: any, index: number) => (
+                                <option key={index} value={model.apiId}>
                                     {model.displayName}
                                 </option>
                             ))}
@@ -243,25 +244,32 @@ function FormPage() {
                                     <Controller
                                         name={`${modelName}.${modelField.apiId}`}
                                         control={control}
+                                        shouldUnregister={true}
                                         render={({ field }) => (
                                             <select
                                                 value={field.value}
                                                 onChange={field.onChange}
                                             >
-                                                <option value="">
+                                                <option
+                                                    key={`${modelName}-${dataTypes.length}`}
+                                                    value=""
+                                                >
                                                     Select a data type
                                                 </option>
-                                                {dataTypes.map((type) => (
-                                                    <option value={type.value}>
-                                                        {type.label}
-                                                    </option>
-                                                ))}
+                                                {dataTypes.map(
+                                                    (
+                                                        type: any,
+                                                        index: number
+                                                    ) => (
+                                                        <option
+                                                            key={`${modelName}-${index}`}
+                                                            value={type.value}
+                                                        >
+                                                            {type.label}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
-                                            // <Input
-                                            //     type="text"
-                                            //     value={field.value}
-                                            //     onChange={field.onChange}
-                                            // />
                                         )}
                                     />
                                 </Stack>

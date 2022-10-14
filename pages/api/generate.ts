@@ -96,7 +96,6 @@ function generateData(fields: any) {
     const data: any = {};
     Object.keys(fields).map((key: string) => {
         // Workaround while we add support for images
-        console.log("fields[key]:", fields[key]);
         if (
             fields[key] !== "image" &&
             fields[key] !== "skip" &&
@@ -112,7 +111,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    // console.log(req.body);
+    console.log(req.body);
     const { quantity, model } = req.body;
     const fields = req.body[model];
     console.log(fields);
@@ -131,7 +130,7 @@ export default async function handler(
         entries.push(data);
     }
 
-    console.log("entries:", entries);
+    // console.log("entries:", entries);
 
     let created: any = [];
     await Promise.all(
