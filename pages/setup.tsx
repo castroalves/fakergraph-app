@@ -1,4 +1,6 @@
-import { useApp, Wrapper } from "@graphcms/app-sdk-react";
+import { useApp } from "@graphcms/app-sdk-react";
+import { Button, Flex, Heading, Inline, Stack, Text } from "@hygraph/baukasten";
+import { useState } from "react";
 
 export default function Page() {
     return <Setup />;
@@ -16,40 +18,52 @@ function Setup() {
 function Install() {
     const { updateInstallation } = useApp();
     return (
-        <button
-            onClick={() =>
-                updateInstallation({ status: "PENDING", config: {} })
-            }
-        >
-            Install App
-        </button>
+        <Flex gap="16" flexDirection="column" width="300px">
+            <Heading as="h2">FakerGraph</Heading>
+            <Text>Generate fake content, powered by Faker.js</Text>
+            <Inline>
+                <Button
+                    onClick={() =>
+                        updateInstallation({ status: "PENDING", config: {} })
+                    }
+                >
+                    Install App
+                </Button>
+            </Inline>
+        </Flex>
     );
 }
 
 function Configure({ config }: any) {
     const { updateInstallation } = useApp();
+    const [loading, setLoading] = useState(false);
 
     return (
-        <div>
-            <h2>Settings</h2>
+        <Flex gap="16" flexDirection="column" width="300px">
+            <Heading as="h2">FakerGraph</Heading>
+            <Text>Generate fake content, powered by Faker.js</Text>
             <form>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                {/* <Stack gap="8">
                     <strong>Erase fake content:</strong>
                     <input type="text" placeholder="Type here to erase" />
                     <button>Erase</button>
-                </div>
-                <div>
-                    <button
-                        onClick={async () =>
+                </Stack> */}
+                <Inline>
+                    <Button
+                        loading={loading}
+                        loadingText="Saving..."
+                        onClick={async () => {
+                            setLoading(true);
                             await updateInstallation({
                                 status: "COMPLETED",
-                            })
-                        }
+                            });
+                            setLoading(false);
+                        }}
                     >
                         Save
-                    </button>
-                </div>
+                    </Button>
+                </Inline>
             </form>
-        </div>
+        </Flex>
     );
 }

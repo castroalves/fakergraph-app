@@ -17,6 +17,7 @@ import {
     Heading,
     Text,
     Select,
+    Inline,
 } from "@hygraph/baukasten";
 
 const PROJECT_QUERY = gql`
@@ -139,16 +140,23 @@ function FormPage() {
                     // setModelFields([]);
                     setEntries(data);
                     setButtonLabel("Generate Content");
+                    showToast({
+                        variantColor: "success",
+                        title:
+                            data.length === 1
+                                ? `${data.length} ${modelName} was created!`
+                                : `${data.length} ${modelName}s were created!`,
+                    });
                 }
             })
             .catch((error) => {
                 console.log(error);
                 setLoading(false);
                 setButtonLabel("Generate Content");
-            })
-            .finally(() => {
-                setLoading(false);
-                setButtonLabel("Generate Content");
+                showToast({
+                    variantColor: "error",
+                    title: "An error occured. Check browser logs.",
+                });
             });
     };
 
@@ -166,9 +174,10 @@ function FormPage() {
                 const models =
                     data.viewer.project.environment.contentModel.models;
                 setModels(models);
-                setModelName(models[0].apiIdPlural);
+                setModelName(models[0].apiId);
                 const fields = getFields(models[0]);
                 setModelFields(fields);
+                setValue("model", models[0].apiId);
             }
         };
         fetchData();
@@ -187,13 +196,13 @@ function FormPage() {
         >
             <h3>FakeGraph</h3>
 
-            {entries.length > 0 && (
+            {/* {entries.length > 0 && (
                 <Alert variantColor="success">
                     {entries.length === 1
                         ? `${entries.length} ${modelName} was created!`
                         : `${entries.length} ${modelName}s were created!`}
                 </Alert>
-            )}
+            )} */}
 
             <Flex gap="16" py="m">
                 <Text>Select a model to generate fake content.</Text>
@@ -276,13 +285,15 @@ function FormPage() {
                             </>
                         );
                     })}
-                    <Button
-                        loading={loading}
-                        loadingText="Generating..."
-                        type="submit"
-                    >
-                        {buttonLabel}
-                    </Button>
+                    <Inline>
+                        <Button
+                            loading={loading}
+                            loadingText="Generating..."
+                            type="submit"
+                        >
+                            {buttonLabel}
+                        </Button>
+                    </Inline>
                 </Flex>
             </form>
         </Flex>
